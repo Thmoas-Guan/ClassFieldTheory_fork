@@ -413,13 +413,12 @@ def ind₁'_π : ind₁' ⟶ 𝟭 (Rep R G) where
     expose_names
     refine Action.hom_ext _ _ ?_
     ext z
-    show Representation.ind₁'_π ((ModuleCat.Hom.hom (ind₁'.map x_2).hom) z) =
-  (ModuleCat.Hom.hom x_2.hom) ((Representation.ind₁'_π) z)
+    show Representation.ind₁'_π ((ind₁'.map x_2).hom.hom z) =
+      x_2.hom.hom ((Representation.ind₁'_π) z)
     simp [ind₁']
     rw [Finsupp.sum_mapRange_index]
-    simp only [Module.End.one_apply]
-    · (expose_names; exact Eq.symm (map_finsuppSum (ModuleCat.Hom.hom x_2.hom) z fun x_3 ↦ _))
-    · exact fun a ↦ rfl
+    · exact (map_finsuppSum x_2.hom.hom z fun _ ↦ _).symm
+    · exact fun _ ↦ rfl
 
 instance : Epi (ind₁'_π.app M) :=
   /-
