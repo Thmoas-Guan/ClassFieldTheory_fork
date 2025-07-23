@@ -399,14 +399,27 @@ def ind₁' : Rep R G ⥤ Rep R G where
 The natural projection `ind₁'.obj M ⟶ M`, which takes `f : G →₀ M.V` to the sum of the
 values of `f`.
 -/
+
+def aux (M : Rep R G) : ind₁'.obj M ⟶ (𝟭 (Rep R G)).obj M := ofHom {
+  val := Representation.ind₁'_π
+  property g := by
+    rw [←LinearMap.coe_comp, ←LinearMap.coe_comp, ←DFunLike.ext'_iff]
+    apply ind₁'_π_comm
+}
+
 def ind₁'_π : ind₁' ⟶ 𝟭 (Rep R G) where
-  app M := ofHom {
-    val := Representation.ind₁'_π
-    property g := by
-      rw [←LinearMap.coe_comp, ←LinearMap.coe_comp, ←DFunLike.ext'_iff]
-      apply ind₁'_π_comm
-  }
-  naturality _ _ _ := sorry
+  app := Rep.aux
+  naturality _ _ _ := by
+    expose_names
+    refine Action.hom_ext _ _ ?_
+    ext z
+    show Representation.ind₁'_π ((ModuleCat.Hom.hom (ind₁'.map x_2).hom) z) =
+  (ModuleCat.Hom.hom x_2.hom) ((Representation.ind₁'_π) z)
+    simp [ind₁']
+    rw [Finsupp.sum_mapRange_index]
+    simp only [Module.End.one_apply]
+    · (expose_names; exact Eq.symm (map_finsuppSum (ModuleCat.Hom.hom x_2.hom) z fun x_3 ↦ _))
+    · exact fun a ↦ rfl
 
 instance : Epi (ind₁'_π.app M) :=
   /-
