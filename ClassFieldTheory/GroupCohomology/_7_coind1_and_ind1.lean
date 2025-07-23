@@ -400,7 +400,7 @@ The natural projection `ind₁'.obj M ⟶ M`, which takes `f : G →₀ M.V` to 
 values of `f`.
 -/
 
-def aux (M : Rep R G) : ind₁'.obj M ⟶ (𝟭 (Rep R G)).obj M := ofHom {
+def ind₁'_π_app (M : Rep R G) : ind₁'.obj M ⟶ (𝟭 (Rep R G)).obj M := ofHom {
   val := Representation.ind₁'_π
   property g := by
     rw [←LinearMap.coe_comp, ←LinearMap.coe_comp, ←DFunLike.ext'_iff]
@@ -408,24 +408,19 @@ def aux (M : Rep R G) : ind₁'.obj M ⟶ (𝟭 (Rep R G)).obj M := ofHom {
 }
 
 def ind₁'_π : ind₁' ⟶ 𝟭 (Rep R G) where
-  app := Rep.aux
-  naturality _ _ _ := by
-    expose_names
-    refine Action.hom_ext _ _ ?_
+  app := ind₁'_π_app
+  naturality _ _ x := by
     ext z
-    show Representation.ind₁'_π ((ind₁'.map x_2).hom.hom z) =
-      x_2.hom.hom ((Representation.ind₁'_π) z)
-    simp [ind₁']
-    rw [Finsupp.sum_mapRange_index]
-    · exact (map_finsuppSum x_2.hom.hom z fun _ ↦ _).symm
-    · exact fun _ ↦ rfl
+    change Representation.ind₁'_π ((ind₁'.map x).hom.hom z) =
+      x.hom.hom ((Representation.ind₁'_π) z)
+    simp [ind₁', sum_mapRange_index]
+    exact (map_finsuppSum x.hom.hom z _).symm
 
-instance : Epi (ind₁'_π.app M) :=
-  /-
-  This is because `ind₁'_π.app M` is surjective.
-  A pre-image of an element `m : M` is `single 1 m : G →₀ V`.
-  -/
-  sorry
+instance : Epi (ind₁'_π.app M) := by
+  refine (epi_iff_surjective (ind₁'_π.app M)).2 fun m ↦ ?_
+  use single 1 m
+  show Representation.ind₁'_π (fun₀ | 1 => m) = m
+  simp only [Functor.id_obj, ind₁'_π_apply, Module.End.one_apply, sum_single_index]
 
 lemma ind₁'_obj_ρ_apply (g : G) : (ind₁'.obj M).ρ g = M.ρ.ind₁' g := rfl
 
